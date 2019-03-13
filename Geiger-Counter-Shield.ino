@@ -152,10 +152,17 @@ void setup()
   // -------------------------- Setup the HV for the tube ---------------------------- //
   
   pinMode(10, OUTPUT);                   // Set output pin for PWM  
-  pinMode(A0, INPUT);                    // Set analog input for HV measure 
-  analogReference(INTERNAL);             // Set reference to internal 1.1 V                 
+  pinMode(A0, INPUT);                    // Set analog input for HV measure
   TCCR1B = TCCR1B & 0b11111000 | 0x02;   // Set PWM frequency of pin 10 to 4 kHz
   delay(50);
+
+  // ----------------- Set reference voltage to the internal 1.1 V ------------------- //
+
+  #if defined(__AVR_ATmega328P__) || defined(__AVR_ATmega168__)  
+    analogReference(INTERNAL);           // For Arduino UNO           
+  #else
+    analogReference(INTERNAL1V1);        // For Arduino MEGA
+  #endif
   
   // ------------ Configure interrupt on INT0 for detecting tube events -------------- //
   
