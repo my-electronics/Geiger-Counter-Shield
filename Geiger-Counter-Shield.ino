@@ -23,6 +23,7 @@ The commercial usage is restricted.
 #include <SPI.h>
 #include <SD.h>
 #include <EEPROM.h>
+#include <Wire.h>
 
 // ------------------------------------- Defines --------------------------------------//
 
@@ -43,7 +44,10 @@ The commercial usage is restricted.
 #define CS 3                        // Set chip select pin for SD card
    
 #define SERIAL_LOGGER true 
-                  
+
+#define I2C_BUS true              // Enable reading data from this device via I2C
+const int I2C_ADDR = 0x42;        // I2C Address for this device. SDA=PIN20, SCL=PIN21
+
 //---------------------------------- Global variables ---------------------------------//
 
 LiquidCrystal lcd(9, 8, 7, 6, 5, 4);
@@ -69,7 +73,7 @@ int n = 0;                            // Counter for array
 static float doseRate;                // Variable for the dose rate
 
 int pwm = PWM_INIT;
-int adc_val = 0;                           // Variable to store HV reading
+int adc_val = 0;                      // Variable to store HV reading
 
 unsigned long t = 0;                  // Counters for timing 
 unsigned long timer1 = 0;
@@ -104,6 +108,13 @@ void setup()
   digitalWrite(BUTTON2, HIGH);  
 
   
+  // Configure I2C bus
+  #if (I2C_BUS)
+    Wire.begin(I2C_ADDR);
+    Wire.onRequest(I2CRequestEvent); 
+  #endif
+  
+
   // Start LCD display  
   lcd.begin(16, 2);
   lcd.setCursor(0, 0);
@@ -397,6 +408,12 @@ void getDisplayStatus()
     displayStatus = 0;
   }
 }
+
+//-------------------------- Reply to I2C request -------------------------------------//
+void I2CRequestEvent()
+{
+    Wire.write(cpm);
+    }
 
 /////////////////////////////////////////////////////////////////////////////////////////
 //                                SUB PROCEDURES END                                   //
