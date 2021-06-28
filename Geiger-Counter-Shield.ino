@@ -254,10 +254,9 @@ void loop()
     cpm = 0;
     for (int i = 0; i < 6; i++)
       cpm += cp10sValues[i];
-
-    if (n < 6)
-      n++;
-    else
+    
+    n++;
+    if (n == 6)
       n = 0;
 
     // Check if the CPM level changes rapidly 
