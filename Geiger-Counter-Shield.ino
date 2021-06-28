@@ -217,15 +217,16 @@ void loop()
         setDisplayStatus(displayStatus);     
     }
     
+    if (cps > CPS_WARNING) // Lit LED2 for warning
+      PORTC |= _BV (2);
+    else 
+      PORTC &= ~_BV (2);
+     
     if (displayStatus == 0) { // Display CPS and bargraph if the CPS display is selected
       clearDisplay(0, 0, 5);
       lcd.setCursor(0, 0);
       if (cps > 10000) // Limit maximum possible CPS
         cps = 10000;
-      if (cps > CPS_WARNING) // Lit LED2 for warning
-        PORTC |= _BV (1);
-      else 
-        PORTC &= ~_BV (1);
       lcd.print(cps);
       drawBars();
     }
